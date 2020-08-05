@@ -1,0 +1,32 @@
+if(!require(tidyverse)) install.packages("tidyverse")
+if(!require(patchwork)) install.packages("patchwork")
+if(!require(gapminder)) install.packages("gapminder")
+
+library(tidyverse)
+library(patchwork)
+library(gapminder)
+
+Paises = c("Nigeria", "Syria", "South Africa", "Thailand", "Morrocco", "China", "Mexico", "Kenya", "Argentina",
+           "United Kingdom", "Germany", "New Zealand", "United States", "Spain", "Japan")
+
+#Visualización para ver si existe alguna correlación entre la esperanza de vida y PIB per cápita para los países citados en la línea anterior.
+gapminder %>% 
+  filter(country %in% Paises) %>% 
+    ggplot(aes(y = lifeExp, x = gdpPercap)) + geom_point(aes(color = country)) + geom_smooth(method = "loess", formula = y ~ x)
+#De aquí vemos que salvo para PIBperCápitas muy altos (poco muestreo como para sacar conclusiones), en general existe una correlación entre 
+#la esperanza de vida y el PIB, creciendo la esperanza en función de la capacidad económica del individuo. Esto se nota especialmente para poco PIB,
+#donde pequeños cambios en éste, crea un gran aumento en la esperanza de vida. Conforme aumentamos el PIB, más se suaviza esta curva.
+gapminder %>% 
+  filter(country %in% Paises) %>% 
+    ggplot(aes(y = lifeExp, x = gdpPercap)) + geom_point(aes(color = country)) + facet_wrap(~ country, nrow = 2)
+#Con esta separación se pretende ver de manera individual si responden de la misma forma. Como se puede observar al correr el código, salvo algunos 
+#puntos para PIB bajos, esta tendencia sigue estando presente.
+
+#Al comparar por continentes, observamos la misma tendencia aunque es cierto que los valores de Europa y Oceanía se ajustan mejor, mientras que países 
+#con mayor númerod e países subdesarrollados, el ajuste no es tan fuerte, pudiendo ser un indicativo, que no solo el PIB per cápita influye en la esperanza 
+#de vida, sino que otros factores como hambrunas o guerras pueden influir.
+gapminder %>% 
+  ggplot(aes(y = lifeExp, x = gdpPercap)) + geom_point(aes(color = continent)) + geom_smooth(method = "loess", formula = y ~ x)
+gapminder %>% 
+  ggplot(aes(y = lifeExp, x = gdpPercap)) + geom_point(aes(color = continent)) + facet_wrap(~ continent, nrow = 2)
+
